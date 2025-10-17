@@ -1,37 +1,29 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import bandoDeDados from './bandoDeDados.js';
+bandoDeDados();
+import Mulher from './mulherModel.js';
 const app = express();
 const porta = 3333;
 const router = express.Router();
 app.use(express.json());
 
 
-const mulheres = [
-    {
-        id: "1",
-        nome: "Ada Lovelace",
-        profissao: "Matemática"
-    },
-    {   
-        id: "2",
-        nome: "Grace Hopper",
-        profissao: "Almirante da Marinha"
-    },
-    {   
-        id: "3",
-        nome: "Hedy Lamarr",
-        profissao: "Atriz e Inventora"
-    }
-    
-]
-
 function mostraPorta() {
     console.log("Servidor criado e rodando na porta ", porta);
 }
 
 //GET
-function mostraMulheres(request, response) {
-response.json(mulheres);
+async function mostraMulheres(request, response) {
+
+try {
+    const mulheresVindasDoBancoDeDados = await Mulher.find();
+    response.json(mulheresVindasDoBancoDeDados);
+} catch (erro) {
+    console.log(erro);
+}
+
+response.json();
 }
 
 //POST
