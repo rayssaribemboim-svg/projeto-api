@@ -1,5 +1,4 @@
 import express from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import bandoDeDados from './bandoDeDados.js';
 bandoDeDados();
 import Mulher from './mulherModel.js';
@@ -16,57 +15,64 @@ function mostraPorta() {
 //GET
 async function mostraMulheres(request, response) {
 
-try {
-    const mulheresVindasDoBancoDeDados = await Mulher.find();
-    response.json(mulheresVindasDoBancoDeDados);
-} catch (erro) {
-    console.log(erro);
-}
+    try {
+        const mulheresVindasDoBancoDeDados = await Mulher.find();
+        response.json(mulheresVindasDoBancoDeDados);
+    } catch (erro) {
+        console.log(erro);
+    }
 
-response.json();
+    response.json();
 }
 
 //POST
-function criaMulher(request, response) {
-    const mulher = {
-        id: uuidv4(),
+async function criaMulher(request, response) {
+    const mulher = new Mulher({
         nome: request.body.nome,
         profissao: request.body.profissao
+    })
+
+    try {
+        const mulherCriada = await mulher.save();
+        response.status(201).json(mulherCriada);
+    } catch (erro) {
+        console.log(erro);
     }
-    mulheres.push(mulher);
-    response.json(mulheres);
+
 }
 
 //PATCH
-function corrigeMulher(request, response) {
-    function encontraMulher(mulher) {
-        if (mulher.id === request.params.id) {
-            return mulher;
+async function corrigeMulher(request, response) {
+
+    try {
+
+        const mulherEncontrada = await Mulher.findById(request.params.id);
+        if (request.body.nome) {
+            mulherEncontrada.nome = request.body.nome;
+        } if (request.body.profissao) {
+            mulherEncontrada.profissao = request.body.profissao;
         }
-    }    
 
-    const mulherEncontrada = mulheres.find(encontraMulher);
+        const mulherAtualizadaNoBancoDeDados = await mulherEncontrada.save();
+        response.json(mulherAtualizadaNoBancoDeDados);
 
-    if (request.body.nome) {
-        mulherEncontrada.nome = request.body.nome;
-    }if (request.body.profissao) {
-        mulherEncontrada.profissao = request.body.profissao;
+    } catch (erro) {
+        console.log(erro);
     }
 
-    response.json(mulherEncontrada);
+
 }
 
 //DELETE
-function deletaMulher(request, response) {
-    function encontraMulher(mulher) {
-        return mulher.id === request.params.id;
+async function deletaMulher(request, response) {
+    
+    try{
+        await Mulher.findByIdAndDelete(request.params.id);
+        response.json({message: 'Mulher deletada com sucesso!' });
+    }catch(erro){
+        console.log(erro);
     }
-
-    const indice = mulheres.findIndex(encontraMulher);
-    if (indice !== -1) {
-        mulheres.splice(indice, 1);
-    }
-    response.json(mulheres);
+    
 }
 
 
