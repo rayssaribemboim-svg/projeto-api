@@ -5,7 +5,7 @@ import Mulher from './mulherModel.js';
 const app = express();
 const porta = 3333;
 const router = express.Router();
-const cors = require('cors');
+import cors from 'cors'; 
 app.use(express.json());
 app.use(cors());
 
